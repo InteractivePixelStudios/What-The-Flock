@@ -1,2 +1,11 @@
-# What-The-Flock
-This is the main GitHub repository for the Summer 2024 Capstone project, What the Flock.
+# All-Flocked-Up
+This is the main GitHub repository for the Summer 2024 Capstone project; All Flocked Up!
+
+All Flocked Up! is a third-person pseudo-open-world adventure/stealth game where the player gets to experience the city of Toronto through the eyes of a pigeon. This pigeon was a late bloomer that got left behind by its family flock and now it is up to the player to find other loner pigeons and help fulfill their requests by flying or strutting around the city, solving puzzles and gaining rewards when completed. However, beware of being stepped on by people walking to work, targeted by hungry hawks flying overhead or over-excited dogs waiting outside stores. Try your best to survive this bustling city while looking for your family flock. However, what will you do once you find them?
+
+The more the player talks to and helps other pigeons with their problems and requests, the more of the city will be unlocked to explore and poop on. These requests from other pigeons range from retrieving a much-wanted item located on the other end of the city for them to playing hide-and-seek on the city streets. The reward for helping your fellow pigeon does not just stop at expanding the map, NPC pigeons will also give the player equipable items that will boost the player's stats and unlock different flying maneuvers. Be careful, however, as some items have a certain amount of uses before they perish.
+
+All Flocked Up! provides comic relief during the gameplay with pigeon humour, bird puns, and a poop mechanic that can be used at any moment. Upbeat electronic music will further add to the fun atmosphere where the player can enjoy the experience of being a small pigeon in a big world. The only mood killer for the player will be when the hawk sneaks up while the pigeon soars in the sky, and the alley cats patrol the darker corners of the city, when flight isn't the best option, creating a light tension that will keep players engaged and aware of their surroundings. Not to worry if the hawk catches up as the player is able to create multiple nest-save points around the city to try again.
+  
+This game offers an answer to a question everyone asks themselves: “If I was a pigeon in Toronto what would I do?”. Now you can finally find out in this pigeon simulator. Will you fly to the top of a building, will you poop on anyone, wander into grocery stores and steal a loaf of bread? There is only one way to find out. 
+

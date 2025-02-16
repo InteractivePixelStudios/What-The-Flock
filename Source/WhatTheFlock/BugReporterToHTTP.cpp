@@ -1,6 +1,6 @@
 #include "BugReporterToHTTP.h"
-#include "GameFramework/Character.h"
-#include "Kismet/GameplayStatics.h"
+#include "HttpModule.h"
+#include "GameFramework/PlayerController.h"
 
 ABugReporterToHTTP::ABugReporterToHTTP()
 {
@@ -19,41 +19,38 @@ void ABugReporterToHTTP::Tick(float DeltaTime)
 
 void ABugReporterToHTTP::SavePlayerData()
 {
-	ACharacter* PlayerCharacter = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	if (PlayerCharacter)
+	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
+	if (PlayerController)
 	{
-		PlayerPosition = PlayerCharacter->GetActorLocation();
-		PlayerRotation = PlayerCharacter->GetActorRotation();
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player character not found."));
+		PlayerController->GetPlayerViewPoint(PlayerPosition, PlayerRotation);
+		UE_LOG(LogTemp, Log, TEXT("Player Data Saved: Position (%s), Rotation (%s)"),
+			*PlayerPosition.ToString(), *PlayerRotation.ToString());
 	}
 }
 
-void ABugReporterToHTTP::SendBugReport(const FString& BugDescription, const FString& ToEmail)
+void ABugReporterToHTTP::SendBugReport(const FString& BugDescription)
 {
-	FHttpRequestRef Request = FHttpModule::Get().CreateRequest();
+	if (GoogleFormID.IsEmpty())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Google Form ID not set."));
+		return;
+	}
 
-	const FString URL = FString::Printf(TEXT("https://api.mailgun.net/v3/%s/messages"), *MailgunDomain);
-	const FString AuthHeader = "Basic " + FBase64::Encode("api:" + ApiKey);
+	// Construct the form submission URL
+	FString URL = FString::Printf(TEXT("https://docs.google.com/forms/d/e/%s/formResponse"), *GoogleFormID);
 
-	FString BugData = FString::Printf(
-		TEXT("from=%s&to=%s&subject=%s&text=%s\nPlayer Position: %s\nPlayer Rotation: %s"),
-		*FGenericPlatformHttp::UrlEncode(FString("bugreporter@" + MailgunDomain)),
-		*FGenericPlatformHttp::UrlEncode(ToEmail),
-		*FGenericPlatformHttp::UrlEncode("Bug Report"),
-		*FGenericPlatformHttp::UrlEncode(BugDescription),
-		*PlayerPosition.ToString(),
-		*PlayerRotation.ToString()
-	);
-
-
+	TSharedRef<IHttpRequest> Request = FHttpModule::Get().CreateRequest();
 	Request->SetURL(URL);
 	Request->SetVerb("POST");
-	Request->SetHeader("Authorization", AuthHeader);
 	Request->SetHeader("Content-Type", "application/x-www-form-urlencoded");
-	Request->SetContentAsString(BugData);
+
+	// Map Google Form entry fields to Unreal Engine data
+	FString PlayerData = FString::Printf(TEXT("Position: %s, Rotation: %s"), *PlayerPosition.ToString(), *PlayerRotation.ToString());
+	FString Payload = FString::Printf(TEXT("entry.1041133368=%s&entry.1973105176:=%s"),
+		*FGenericPlatformHttp::UrlEncode(BugDescription),
+		*FGenericPlatformHttp::UrlEncode(PlayerData));
+
+	Request->SetContentAsString(Payload);
 
 	Request->OnProcessRequestComplete().BindUObject(this, &ABugReporterToHTTP::OnResponseReceived);
 	Request->ProcessRequest();
@@ -63,10 +60,10 @@ void ABugReporterToHTTP::OnResponseReceived(FHttpRequestPtr Request, FHttpRespon
 {
 	if (bConnectedSuccessfully && Response.IsValid())
 	{
-		UE_LOG(LogTemp, Display, TEXT("Bug report sent successfully: %s"), *Response->GetContentAsString());
+		UE_LOG(LogTemp, Log, TEXT("Bug report sent successfully!"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("Failed to send bug report."));
+		UE_LOG(LogTemp, Warning, TEXT("Failed to send bug report."));
 	}
 }

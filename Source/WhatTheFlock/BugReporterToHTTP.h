@@ -1,26 +1,38 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Http.h"
 #include "BugReporterToHTTP.generated.h"
 
 UCLASS()
 class WHATTHEFLOCK_API ABugReporterToHTTP : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
+
+public:
 	ABugReporterToHTTP();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
+public:
 	virtual void Tick(float DeltaTime) override;
 
+	/** Sends a bug report using Google Forms */
+	UFUNCTION(BlueprintCallable, Category = "Bug Report")
+	void SendBugReport(const FString& BugDescription);
+
+	/** Captures the current player position and rotation */
+	UFUNCTION(BlueprintCallable, Category = "Bug Report")
+	void SavePlayerData();
+
+private:
+	void OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully);
+
+	UPROPERTY(EditAnywhere, Category = "Bug Report")
+	FString GoogleFormID = "3JFg9DosWzXMvL8o9";
+
+	FVector PlayerPosition;
+	FRotator PlayerRotation;
 };
